@@ -34,7 +34,7 @@ func (p *DotenvProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 
 func (p *DotenvProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "A utility Terraform provider to read variables from dotfiles.",
+		Description: "A utility Terraform provider for dotfiles.",
 	}
 }
 

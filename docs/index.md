@@ -3,12 +3,12 @@
 page_title: "dotenv Provider"
 subcategory: ""
 description: |-
-  A utility Terraform provider to read variables from dotfiles.
+  A utility Terraform provider for dotfiles.
 ---
 
 # dotenv Provider
 
-A utility Terraform provider to read variables from dotfiles.
+A utility Terraform provider for dotfiles.
 
 ## Example Usage
 
