@@ -16,8 +16,7 @@ A utility Terraform provider to read variables from dotfiles.
 provider "dotenv" {}
 
 data "dotenv_file" "app" {
-  filename  = "./application/app.env"
-  sensitive = true
+  filename = "./application/app.env"
 }
 
 provider "some_provider" {

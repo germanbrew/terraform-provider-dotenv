@@ -3,9 +3,8 @@ package provider
 import (
 	"context"
 	"fmt"
-	"os"
 
-	"github.com/direnv/direnv/v2/pkg/dotenv"
+	"github.com/germanbrew/terraform-provider-dotenv/internal/utils"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -28,7 +27,7 @@ type fileDotEnvDataSource struct{}
 // fileDotEnvDataSourceModel describes the data source data model.
 type fileDotEnvDataSourceModel struct {
 	Filename  types.String `tfsdk:"filename"`
-	Sensitive types.Bool   `tfsdk:"sensitive"`
+	KeepLocal types.Bool   `tfsdk:"keep_local"`
 	Entries   types.Map    `tfsdk:"entries"`
 }
 
@@ -39,7 +38,7 @@ func (d *fileDotEnvDataSource) Metadata(ctx context.Context, req datasource.Meta
 func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Provides the entries of a dotenv file",
+		MarkdownDescription: "Reads and provides the entries of a dotenv file",
 
 		Attributes: map[string]schema.Attribute{
 			"filename": schema.StringAttribute{
@@ -49,7 +48,7 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
-			"sensitive": schema.BoolAttribute{
+			"keep_local": schema.BoolAttribute{
 				MarkdownDescription: "`Default: false` Set to `true` if the contents of the dotfile should not be " +
 					"saved in the Terraform state and instead should always be loaded locally at runtime.",
 				Optional: true,
@@ -58,6 +57,7 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 				MarkdownDescription: "Key-Value entries of the dotenv file",
 				Computed:            true,
 				ElementType:         types.StringType,
+				Sensitive:           true,
 			},
 		},
 	}
@@ -73,7 +73,7 @@ func (d *fileDotEnvDataSource) Configure(ctx context.Context, req datasource.Con
 func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data fileDotEnvDataSourceModel
 
-	if !data.Sensitive.ValueBool() {
+	if !data.KeepLocal.ValueBool() {
 		// Read Terraform configuration data into the model
 		resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
@@ -89,22 +89,11 @@ func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		tflog.Info(ctx, "No file name specified, so the default is used: "+filename)
 	}
 
-	tflog.Debug(ctx, "Trying to read file "+filename)
-
-	contents, err := os.ReadFile(filename)
-	if err != nil {
-		resp.Diagnostics.AddError("Error reading file", fmt.Sprintf("Error reading file %s: %s", filename, err))
-
-		return
-	}
-
-	tflog.Debug(ctx, "Reading the file was successful")
-
-	tflog.Debug(ctx, "Trying to parse contents of file "+filename)
-
-	parsedEntries, err := dotenv.Parse(string(contents))
+	parsedEntries, err := utils.ParseDotEnvFile(filename)
 	if err != nil {
 		resp.Diagnostics.AddError("Parse Error", fmt.Sprintf("Parsing contents of file %s failed: %s", filename, err))
+
+		return
 	}
 
 	entries := make(map[string]attr.Value)
@@ -114,13 +103,10 @@ func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequ
 
 	tflog.Debug(ctx, "Parsing the file was successful")
 
-	// hash := sha256.New()
-	// hash.Write(contents)
-
 	data.Filename = types.StringValue(filename)
 	data.Entries, _ = types.MapValue(types.StringType, entries)
 
-	if !data.Sensitive.ValueBool() {
+	if !data.KeepLocal.ValueBool() {
 		// Save data into Terraform state
 		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 	}
