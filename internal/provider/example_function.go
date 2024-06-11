@@ -9,9 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/function"
 )
 
-var (
-	_ function.Function = ExampleFunction{}
-)
+var _ function.Function = ExampleFunction{}
 
 func NewExampleFunction() function.Function {
 	return ExampleFunction{}

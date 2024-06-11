@@ -1,27 +1,74 @@
+# yaml-language-server: $schema: https://golangci-lint.run/jsonschema/golangci.jsonschema.json
+
 # Visit https://golangci-lint.run/ for usage documentation
 # and information on other useful linters
 issues:
-  max-per-linter: 0
+  max-issues-per-linter: 0
   max-same-issues: 0
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - funlen
+        - dupword
 
 linters:
   disable-all: true
   enable:
+    - asciicheck
+    - contextcheck
     - durationcheck
+    - dupword
     - errcheck
     - exportloopref
     - forcetypeassert
+    - forbidigo
+    - gci
+    - gochecknoglobals
+    - gocheckcompilerdirectives
+    - gochecknoinits
+    - gocognit
+    - gocritic
     - godot
     - gofmt
+    - gofumpt
+    - goimports
+    - gomoddirectives
     - gosimple
+    - gosec
+    - govet
     - ineffassign
+    - lll
     - makezero
     - misspell
+    - mirror
     - nilerr
+    - nlreturn
+    - noctx
+    - nolintlint
+    - nonamedreturns
+    - prealloc
+    - perfsprint
     - predeclared
     - staticcheck
+    - tagalign
+    - tagliatelle
     - tenv
+    - testifylint
     - unconvert
     - unparam
     - unused
-    - vet
+    - wastedassign
+    - wsl
+    - wrapcheck
+
+linters-settings:
+  lll:
+    line-length: 160
+    tab-width: 4
+
+  tagliatelle:
+    case:
+      use-field-name: true
+      rules:
+        json: snake
+        tfsdk: snake

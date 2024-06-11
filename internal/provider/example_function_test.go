@@ -64,7 +64,7 @@ func TestExampleFunction_Unknown(t *testing.T) {
 				resource "terraform_data" "test" {
 					input = "testvalue"
 				}
-				
+
 				output "test" {
 					value = provider::scaffolding::example(terraform_data.test.output)
 				}
