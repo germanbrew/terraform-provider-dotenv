@@ -3,12 +3,13 @@ module github.com/germanbrew/terraform-provider-dotenv
 go 1.21
 
 require (
+	github.com/direnv/direnv/v2 v2.34.0
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
 	github.com/hashicorp/terraform-plugin-framework v1.9.0
+	github.com/hashicorp/terraform-plugin-framework-validators v0.12.0
 	github.com/hashicorp/terraform-plugin-go v0.23.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.8.0
-	github.com/joho/godotenv v1.5.1
 )
 
 require (
@@ -24,8 +25,6 @@ require (
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.6.1 // indirect
 	github.com/cloudflare/circl v1.3.7 // indirect
-	github.com/direnv/direnv v0.1.154 // indirect
-	github.com/direnv/direnv/v2 v2.34.0 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
@@ -45,7 +44,6 @@ require (
 	github.com/hashicorp/logutils v1.0.0 // indirect
 	github.com/hashicorp/terraform-exec v0.21.0 // indirect
 	github.com/hashicorp/terraform-json v0.22.1 // indirect
-	github.com/hashicorp/terraform-plugin-framework-validators v0.12.0 // indirect
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.33.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.2.3 // indirect
 	github.com/hashicorp/terraform-svchost v0.1.1 // indirect
