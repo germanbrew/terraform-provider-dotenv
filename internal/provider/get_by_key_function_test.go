@@ -1,6 +1,3 @@
-// Copyright (c) HashiCorp, Inc.
-// SPDX-License-Identifier: MPL-2.0
-
 package provider
 
 import (
@@ -8,10 +5,12 @@ import (
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
+	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
+	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 )
 
-func TestExampleFunction_Known(t *testing.T) {
+func TestGetByKeyFunction_Known(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
@@ -21,18 +20,23 @@ func TestExampleFunction_Known(t *testing.T) {
 			{
 				Config: `
 				output "test" {
-					value = provider::scaffolding::example("testvalue")
+			  		value = provider::dotenv::get_by_key("EXAMPLE_STRING", "./testdata/test.env")
+				}
+
+				output "addition" {
+			  		value = provider::dotenv::get_by_key("EXAMPLE_INT", "./testdata/test.env") + 50
 				}
 				`,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckOutput("test", "testvalue"),
-				),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownOutputValue("test", knownvalue.StringExact("Example v@lue!")),
+					statecheck.ExpectKnownOutputValue("addition", knownvalue.Int64Exact(150)),
+				},
 			},
 		},
 	})
 }
 
-func TestExampleFunction_Null(t *testing.T) {
+func TestGetByKeyFunction_UnknownKey(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
@@ -42,17 +46,16 @@ func TestExampleFunction_Null(t *testing.T) {
 			{
 				Config: `
 				output "test" {
-					value = provider::scaffolding::example(null)
+			  		value = provider::dotenv::get_by_key("DOES_NOT_EXIST", "./testdata/test.env")
 				}
 				`,
-				// The parameter does not enable AllowNullValue
-				ExpectError: regexp.MustCompile(`argument must not be null`),
+				ExpectError: regexp.MustCompile(`Could not find key`),
 			},
 		},
 	})
 }
 
-func TestExampleFunction_Unknown(t *testing.T) {
+func TestGetByKeyFunction_UnknownFileName(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
@@ -61,17 +64,11 @@ func TestExampleFunction_Unknown(t *testing.T) {
 		Steps: []resource.TestStep{
 			{
 				Config: `
-				resource "terraform_data" "test" {
-					input = "testvalue"
-				}
-				
 				output "test" {
-					value = provider::scaffolding::example(terraform_data.test.output)
+			  		value = provider::dotenv::get_by_key("EXAMPLE_STRING", "./testdata/unknown.env")
 				}
 				`,
-				Check: resource.ComposeAggregateTestCheckFunc(
-					resource.TestCheckOutput("test", "testvalue"),
-				),
+				ExpectError: regexp.MustCompile(`no such file or directory`),
 			},
 		},
 	})
