@@ -101,15 +101,15 @@ To test the provider locally:
     ```
 3.  - Set the variable before running terraform commands:
 
-```sh
-TF_CLI_CONFIG_FILE=~/.terraform.rc terraform plan
-```
+    ```sh
+    TF_CLI_CONFIG_FILE=~/.terraform.rc terraform plan
+    ```
 
     - Or set the env variable `TF_CLI_CONFIG_FILE` and point it to `~/.terraform.rc`: e.g.
 
-```sh
-export TF_CLI_CONFIG_FILE=~/.terraform.rc
-```
+    ```sh
+    export TF_CLI_CONFIG_FILE=~/.terraform.rc
+    ```
 
 4. Now you can just use terraform normally. A warning will appear, that notifies you that you are using an provider override
     ```
