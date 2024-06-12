@@ -15,12 +15,12 @@ A utility Terraform provider for dotfiles.
 ```terraform
 provider "dotenv" {}
 
-data "dotenv_file" "app" {
+data "dotenv" "app" {
   filename = "./application/app.env"
 }
 
 provider "some_provider" {
-  token = data.dotenv_file.app.SECRET_KEY
+  token = data.dotenv.app.SECRET_KEY
 }
 ```
 

@@ -1,5 +1,5 @@
 BINARY_DIR=bin
-BINARY_NAME=terraform-provider-hetznerdns
+BINARY_NAME=terraform-provider-dotenv
 
 .PHONY: build testacc test lint generate fmt
 

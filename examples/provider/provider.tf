@@ -1,9 +1,9 @@
 provider "dotenv" {}
 
-data "dotenv_file" "app" {
+data "dotenv" "app" {
   filename = "./application/app.env"
 }
 
 provider "some_provider" {
-  token = data.dotenv_file.app.SECRET_KEY
+  token = data.dotenv.app.entries.SECRET_KEY
 }

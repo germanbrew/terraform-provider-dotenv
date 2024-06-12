@@ -26,19 +26,20 @@ type fileDotEnvDataSource struct{}
 
 // fileDotEnvDataSourceModel describes the data source data model.
 type fileDotEnvDataSourceModel struct {
-	Filename  types.String `tfsdk:"filename"`
-	KeepLocal types.Bool   `tfsdk:"keep_local"`
-	Entries   types.Map    `tfsdk:"entries"`
+	Filename types.String `tfsdk:"filename"`
+	Entries  types.Map    `tfsdk:"entries"`
 }
 
 func (d *fileDotEnvDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName + "_file"
+	resp.TypeName = req.ProviderTypeName // + "_file"
 }
 
 func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Reads and provides the entries of a dotenv file",
+		MarkdownDescription: "Reads and provides all entries of a dotenv file. " +
+			"If you only need a specifc value and/or do not want to store the contents of the file in the state, " +
+			"you can use the `get_by_key` provider function.",
 
 		Attributes: map[string]schema.Attribute{
 			"filename": schema.StringAttribute{
@@ -48,16 +49,12 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
-			"keep_local": schema.BoolAttribute{
-				MarkdownDescription: "`Default: false` Set to `true` if the contents of the dotfile should not be " +
-					"saved in the Terraform state and instead should always be loaded locally at runtime.",
-				Optional: true,
-			},
 			"entries": schema.MapAttribute{
-				MarkdownDescription: "Key-Value entries of the dotenv file",
-				Computed:            true,
-				ElementType:         types.StringType,
-				Sensitive:           true,
+				MarkdownDescription: "Key-Value entries of the dotenv file. The values are by default considered nonsensitive. " +
+					"If you want to hide the values in any output as sensitive contents, you can use the " +
+					"[`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.",
+				Computed:    true,
+				ElementType: types.StringType,
 			},
 		},
 	}
@@ -73,13 +70,11 @@ func (d *fileDotEnvDataSource) Configure(ctx context.Context, req datasource.Con
 func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
 	var data fileDotEnvDataSourceModel
 
-	if !data.KeepLocal.ValueBool() {
-		// Read Terraform configuration data into the model
-		resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	// Read Terraform configuration data into the model
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
-		if resp.Diagnostics.HasError() {
-			return
-		}
+	if resp.Diagnostics.HasError() {
+		return
 	}
 
 	filename := data.Filename.ValueString()
@@ -96,9 +91,15 @@ func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequ
 		return
 	}
 
-	entries := make(map[string]attr.Value)
+	entries := make(map[string]attr.Value, len(parsedEntries))
 	for key, value := range parsedEntries {
 		entries[key] = types.StringValue(value)
+
+		if err != nil {
+			resp.Diagnostics.AddError("Conversion Error", fmt.Sprintf("Failed to convert key %s value %s: %s", key, value, err))
+
+			return
+		}
 	}
 
 	tflog.Debug(ctx, "Parsing the file was successful")
@@ -106,8 +107,6 @@ func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequ
 	data.Filename = types.StringValue(filename)
 	data.Entries, _ = types.MapValue(types.StringType, entries)
 
-	if !data.KeepLocal.ValueBool() {
-		// Save data into Terraform state
-		resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
-	}
+	// Save data into Terraform state
+	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
