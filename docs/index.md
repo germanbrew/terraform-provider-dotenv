@@ -20,7 +20,7 @@ data "dotenv" "app" {
 }
 
 provider "some_provider" {
-  token = data.dotenv.app.SECRET_KEY
+  token = data.dotenv.app.entries.SECRET_KEY
 }
 ```
 
