@@ -8,7 +8,7 @@ description: |-
 
 # function: get_by_key
 
-Reads and provides a single entry of a dotfile by its key
+Reads and provides a single entry of a .env file by its key
 
 ## Example Usage
 

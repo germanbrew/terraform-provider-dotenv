@@ -3,12 +3,12 @@
 page_title: "dotenv Provider"
 subcategory: ""
 description: |-
-  A utility Terraform provider for dotfiles.
+  A utility Terraform provider for .env files.
 ---
 
 # dotenv Provider
 
-A utility Terraform provider for dotfiles.
+A utility Terraform provider for .env files.
 
 ## Example Usage
 
