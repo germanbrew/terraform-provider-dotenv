@@ -16,7 +16,7 @@ func TestAccDataSource_DotEnvFile(t *testing.T) {
 				Config: testAccExampleDataSourceConfig,
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.dotenv.test", "entries.EXAMPLE_STRING", "Example v@lue!"),
-					resource.TestCheckResourceAttr("data.dotenv.test", "entries.EXAMPLE_INT", "345"),
+					resource.TestCheckResourceAttr("data.dotenv.test", "entries.EXAMPLE_INT", "100"),
 					resource.TestCheckResourceAttr("data.dotenv.test", "entries.EXAMPLE_FLOAT", "1.23"),
 				),
 			},

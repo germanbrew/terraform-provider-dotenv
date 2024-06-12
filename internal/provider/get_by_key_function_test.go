@@ -22,9 +22,14 @@ func TestGetByKeyFunction_Known(t *testing.T) {
 				output "test" {
 			  		value = provider::dotenv::get_by_key("EXAMPLE_STRING", "./testdata/test.env")
 				}
+
+				output "addition" {
+			  		value = provider::dotenv::get_by_key("EXAMPLE_INT", "./testdata/test.env") + 50
+				}
 				`,
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownOutputValue("test", knownvalue.StringExact("Example v@lue!")),
+					statecheck.ExpectKnownOutputValue("addition", knownvalue.Int64Exact(150)),
 				},
 			},
 		},
