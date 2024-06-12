@@ -5,7 +5,7 @@ output "local" {
   value = data.dotenv.local.entries.EXAMPLE_KEY
 }
 
-# With specific dotfile path
+# With specific .env file path
 data "dotenv" "database" {
   filename = "./database.env"
 }

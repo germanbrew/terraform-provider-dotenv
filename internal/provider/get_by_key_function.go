@@ -24,7 +24,7 @@ func (r GetByKeyFunction) Metadata(_ context.Context, req function.MetadataReque
 func (r GetByKeyFunction) Definition(_ context.Context, _ function.DefinitionRequest, resp *function.DefinitionResponse) {
 	resp.Definition = function.Definition{
 		Summary:             "Get by key function",
-		MarkdownDescription: "Reads and provides a single entry of a dotfile by its key",
+		MarkdownDescription: "Reads and provides a single entry of a .env file by its key",
 		Parameters: []function.Parameter{
 			function.StringParameter{
 				Name:                "key",

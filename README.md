@@ -5,7 +5,7 @@
 [![GitHub Release](https://img.shields.io/github/v/release/germanbrew/terraform-provider-dotenv?sort=date&display_name=release&style=for-the-badge&logo=github&link=https%3A%2F%2Fgithub.com%2Fgermanbrew%2Fterraform-provider-dotenv%2Freleases%2Flatest)](https://github.com/germanbrew/terraform-provider-dotenv/releases/latest)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/germanbrew/terraform-provider-dotenv/test.yaml?branch=main&style=for-the-badge&logo=github&label=Tests&link=https%3A%2F%2Fgithub.com%2Fgermanbrew%2Fterraform-provider-dotenv%2Factions%2Fworkflows%2Ftest.yaml)](https://github.com/germanbrew/terraform-provider-dotenv/actions/workflows/test.yaml)
 
-A utility Terraform provider for dotfiles
+A utility Terraform provider for .env files
 
 ## Requirements
 
