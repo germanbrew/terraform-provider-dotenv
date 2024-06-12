@@ -93,10 +93,10 @@ To test the provider locally:
 2. Create a new file `~/.terraform.rc` and point the provider to the absolute **directory** path of the binary file:
     ```hcl
     provider_installation {
-        dev_overrides {
-            "germanbrew/dotenv" = "/path/to/your/terraform-provider-dotenv/bin/"
-        }
-        direct {}
+      dev_overrides {
+        "germanbrew/dotenv" = "/path/to/your/terraform-provider-dotenv/bin/"
+      }
+      direct {}
     }
     ```
 3.  - Set the variable before running terraform commands:
