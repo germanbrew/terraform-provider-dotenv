@@ -32,7 +32,7 @@ func (r GetByKeyFunction) Definition(_ context.Context, _ function.DefinitionReq
 			},
 			function.StringParameter{
 				Name:                "filename",
-				MarkdownDescription: "Path to the dotfile",
+				MarkdownDescription: "Path to the dotenv file",
 			},
 		},
 		Return: function.StringReturn{},
