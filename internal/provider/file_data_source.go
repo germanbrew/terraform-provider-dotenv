@@ -38,7 +38,7 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "Reads and provides all entries of a dotenv file. " +
-			"If you only need a specifc value and/or do not want to store the contents of the file in the state, " +
+			"If you only need a specific value and/or do not want to store the contents of the file in the state, " +
 			"you can use the `get_by_key` provider function.",
 
 		Attributes: map[string]schema.Attribute{

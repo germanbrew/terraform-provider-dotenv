@@ -1,4 +1,4 @@
-# With specifc dotfile path and without storing the contents to the TF state
+# With specific dotfile path and without storing the contents to the TF state
 data "dotenv" "database" {
   filename   = "./database.env"
   keep_local = true

@@ -3,12 +3,12 @@
 page_title: "dotenv Data Source - dotenv"
 subcategory: ""
 description: |-
-  Reads and provides all entries of a dotenv file. If you only need a specifc value and/or do not want to store the contents of the file in the state, you can use the get_by_key provider function.
+  Reads and provides all entries of a dotenv file. If you only need a specific value and/or do not want to store the contents of the file in the state, you can use the get_by_key provider function.
 ---
 
 # dotenv (Data Source)
 
-Reads and provides all entries of a dotenv file. If you only need a specifc value and/or do not want to store the contents of the file in the state, you can use the `get_by_key` provider function.
+Reads and provides all entries of a dotenv file. If you only need a specific value and/or do not want to store the contents of the file in the state, you can use the `get_by_key` provider function.
 
 
 
