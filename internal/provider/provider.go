@@ -44,7 +44,7 @@ func (p *DotenvProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 			"FOO=BAR # comments at line end are OK too\n" +
 			"```\n" +
 			"You can also do a YAML(ish) style:\n" +
-			"```yaml  \n" +
+			"```yml  \n" +
 			"FOO: bar\n" +
 			"BAR: baz\n" +
 			"```",

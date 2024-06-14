@@ -30,7 +30,7 @@ export BAR=BAZ
 FOO=BAR # comments at line end are OK too
 ```
 You can also do a YAML(ish) style:
-```yaml  
+```yml  
 FOO: bar
 BAR: baz
 ```
