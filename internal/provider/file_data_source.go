@@ -39,7 +39,7 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 		// This description is used by the documentation generator and the language server.
 		MarkdownDescription: "Reads and provides all entries of a dotenv file.\n\n" +
 			"All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).\n\n" +
-			"~> **INFO:** If you only need a specific value and/or do not want to store the contents of the file in the state, " +
+			"-> If you only need a specific value and/or do not want to store the contents of the file in the state, " +
 			"you can use the [`get_by_key`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key) provider function.",
 
 		Attributes: map[string]schema.Attribute{
