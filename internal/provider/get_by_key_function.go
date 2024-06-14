@@ -23,8 +23,9 @@ func (r GetByKeyFunction) Metadata(_ context.Context, req function.MetadataReque
 
 func (r GetByKeyFunction) Definition(_ context.Context, _ function.DefinitionRequest, resp *function.DefinitionResponse) {
 	resp.Definition = function.Definition{
-		Summary:             "Get by key function",
-		MarkdownDescription: "Reads and provides a single entry of a .env file by its key",
+		Summary: "Get by key function",
+		MarkdownDescription: "Reads and provides a single entry of a .env file by its key\n\n" +
+			"All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).",
 		Parameters: []function.Parameter{
 			function.StringParameter{
 				Name:                "key",

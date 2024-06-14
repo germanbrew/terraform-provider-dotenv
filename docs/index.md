@@ -4,11 +4,36 @@ page_title: "dotenv Provider"
 subcategory: ""
 description: |-
   A utility Terraform provider for .env files.
+  Supported formats
+  This provider supports the following formats:
+  
+  SOME_VAR=someval
+  export BAR=BAZ
+  # I am a comment and that is OK
+  FOO=BAR # comments at line end are OK too
+  
+  You can also do a YAML(ish) style:
+  
+  FOO: bar
+  BAR: baz
 ---
 
 # dotenv Provider
 
-A utility Terraform provider for .env files.
+A utility Terraform provider for .env files.  
+## Supported formats
+This provider supports the following formats:  
+```sh
+SOME_VAR=someval
+export BAR=BAZ
+# I am a comment and that is OK
+FOO=BAR # comments at line end are OK too
+```
+You can also do a YAML(ish) style:
+```sh  
+FOO: bar
+BAR: baz
+```
 
 ## Example Usage
 

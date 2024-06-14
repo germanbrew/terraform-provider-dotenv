@@ -10,6 +10,8 @@ description: |-
 
 Reads and provides a single entry of a .env file by its key
 
+All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).
+
 ## Example Usage
 
 ```terraform
