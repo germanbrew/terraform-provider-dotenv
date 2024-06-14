@@ -34,7 +34,20 @@ func (p *DotenvProvider) Metadata(ctx context.Context, req provider.MetadataRequ
 
 func (p *DotenvProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		Description: "A utility Terraform provider for .env files.",
+		MarkdownDescription: "A utility Terraform provider for .env files.  \n" +
+			"## Supported formats\n" +
+			"This provider supports the following formats:  \n" +
+			"```sh\n" +
+			"SOME_VAR=someval\n" +
+			"export BAR=BAZ\n" +
+			"# I am a comment and that is OK\n" +
+			"FOO=BAR # comments at line end are OK too\n" +
+			"```\n" +
+			"You can also do a YAML(ish) style:\n" +
+			"```sh  \n" +
+			"FOO: bar\n" +
+			"BAR: baz\n" +
+			"```",
 	}
 }
 
