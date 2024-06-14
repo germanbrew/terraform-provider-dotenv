@@ -33,6 +33,8 @@ terraform {
 
 Then run terraform init to download the provider.
 
+The provider documentation can be found in the [Terraform registry](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs).
+
 ## Development
 
 ### Requirements
