@@ -4,7 +4,7 @@ page_title: "dotenv Provider"
 subcategory: ""
 description: |-
   A utility Terraform provider for .env files.
-  Supported formats
+  Supported Formats
   This provider supports the following formats:
   
   SOME_VAR=someval
@@ -21,7 +21,7 @@ description: |-
 # dotenv Provider
 
 A utility Terraform provider for .env files.  
-## Supported formats
+## Supported Formats
 This provider supports the following formats:  
 ```sh
 SOME_VAR=someval
@@ -30,7 +30,7 @@ export BAR=BAZ
 FOO=BAR # comments at line end are OK too
 ```
 You can also do a YAML(ish) style:
-```sh  
+```yaml  
 FOO: bar
 BAR: baz
 ```
