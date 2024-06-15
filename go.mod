@@ -1,6 +1,6 @@
 module github.com/germanbrew/terraform-provider-dotenv
 
-go 1.21
+go 1.22.4
 
 require (
 	github.com/direnv/direnv/v2 v2.34.0
