@@ -15,29 +15,29 @@ import (
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
-var _ datasource.DataSource = &fileDotEnvDataSource{}
+var _ datasource.DataSource = &sensitiveFileDotEnvDataSource{}
 
-func NewFileDotEnvDataSource() datasource.DataSource {
-	return &fileDotEnvDataSource{}
+func NewSensitiveFileDotEnvDataSource() datasource.DataSource {
+	return &sensitiveFileDotEnvDataSource{}
 }
 
-// fileDotEnvDataSource defines the data source implementation.
-type fileDotEnvDataSource struct{}
+// sensitiveFileDotEnvDataSource defines the data source implementation.
+type sensitiveFileDotEnvDataSource struct{}
 
-// fileDotEnvDataSourceModel describes the data source data model.
-type fileDotEnvDataSourceModel struct {
+// sensitiveFileDotEnvDataSourceModel describes the data source data model.
+type sensitiveFileDotEnvDataSourceModel struct {
 	Filename types.String `tfsdk:"filename"`
 	Entries  types.Map    `tfsdk:"entries"`
 }
 
-func (d *fileDotEnvDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName // + "_file"
+func (d *sensitiveFileDotEnvDataSource) Metadata(ctx context.Context, req datasource.MetadataRequest, resp *datasource.MetadataResponse) {
+	resp.TypeName = req.ProviderTypeName + "_sensitive"
 }
 
-func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
+func (d *sensitiveFileDotEnvDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Reads and provides all entries of a dotenv file.\n\n" +
+		MarkdownDescription: "Reads and provides all entries of a dotenv file as sensitive data.\n\n" +
 			"All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).\n\n" +
 			"-> If you only need a specific value and/or do not want to store the contents of the file in the state, " +
 			"you can use the [`get_by_key`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key) provider function.",
@@ -51,26 +51,27 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 				},
 			},
 			"entries": schema.MapAttribute{
-				MarkdownDescription: "Key-Value entries of the dotenv file. The values are by default considered nonsensitive. " +
-					"If you want to treat the values as sensitive, you can use the " +
-					"[`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/dotenv_sensitive) data source " +
-					"or [`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.",
+				MarkdownDescription: "Key-Value entries of the dotenv file. The values are by default considered sensitive. " +
+					"If you want to treat the values as non-sensitive, you can use the " +
+					"[`dotenv`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/dotenv) data source " +
+					"or [`nonsensitive()`](https://developer.hashicorp.com/terraform/language/functions/nonsensitive) function.",
 				Computed:    true,
+				Sensitive:   true,
 				ElementType: types.StringType,
 			},
 		},
 	}
 }
 
-func (d *fileDotEnvDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
+func (d *sensitiveFileDotEnvDataSource) Configure(ctx context.Context, req datasource.ConfigureRequest, resp *datasource.ConfigureResponse) {
 	// Prevent panic if the provider has not been configured.
 	if req.ProviderData == nil {
 		return
 	}
 }
 
-func (d *fileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
-	var data fileDotEnvDataSourceModel
+func (d *sensitiveFileDotEnvDataSource) Read(ctx context.Context, req datasource.ReadRequest, resp *datasource.ReadResponse) {
+	var data sensitiveFileDotEnvDataSourceModel
 
 	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
