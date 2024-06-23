@@ -45,4 +45,4 @@ output "foo" {
 
 ### Read-Only
 
-- `entries` (Map of String) Key-Value entries of the dotenv file. The values are by default considered nonsensitive. If you want to treat the values as sensitive, you can use the [`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/dotenv_sensitive) data source or [`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.
+- `entries` (Map of String) Key-Value entries of the dotenv file. The values are by default considered nonsensitive. If you want to treat the values as sensitive, you can use the [`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/sensitive) data source or [`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.

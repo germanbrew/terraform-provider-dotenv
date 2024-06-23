@@ -53,7 +53,7 @@ func (d *fileDotEnvDataSource) Schema(ctx context.Context, req datasource.Schema
 			"entries": schema.MapAttribute{
 				MarkdownDescription: "Key-Value entries of the dotenv file. The values are by default considered nonsensitive. " +
 					"If you want to treat the values as sensitive, you can use the " +
-					"[`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/dotenv_sensitive) data source " +
+					"[`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/sensitive) data source " +
 					"or [`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.",
 				Computed:    true,
 				ElementType: types.StringType,
