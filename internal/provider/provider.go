@@ -68,6 +68,7 @@ func (p *DotenvProvider) Resources(ctx context.Context) []func() resource.Resour
 func (p *DotenvProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
 		NewFileDotEnvDataSource,
+		NewSensitiveFileDotEnvDataSource,
 	}
 }
 
