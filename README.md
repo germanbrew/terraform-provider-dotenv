@@ -47,7 +47,7 @@ The provider documentation can be found in the [Terraform registry](https://regi
 
 Run the following command
 ```sh
-make install-dev-tools
+make install-devtools
 ```
 
 ### Makefile Commands
@@ -58,10 +58,10 @@ Check the subcommands in our [Makefile](Makefile) for useful dev tools and scrip
 
 1. Clone the repository
 1. Enter the repository directory
-1. Build the provider using the Go `install` command:
+1. Build the provider using the Makefile `install` command:
 
 ```shell
-go install
+make build
 ```
 
 ### Adding Dependencies
@@ -82,13 +82,14 @@ Then commit the changes to `go.mod` and `go.sum`.
 
 If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
 
-To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
+You will also need to install the devtools used in this project (see [Install and update development tools](#install-and-update-development-tools)).
 
-To generate or update documentation, run `go generate`.
+To compile the provider, run `make build`.
+This will build the provider and put the provider binary in the `./bin` directory (see [Testing the provider locally](#testing-the-provider-locally)).
+
+To generate or update documentation, run `make generate`.
 
 In order to run the full suite of Acceptance tests, run `make testacc`.
-
-*Note:* Acceptance tests create real resources, and often cost money to run.
 
 ```shell
 make testacc
@@ -98,7 +99,7 @@ make testacc
 
 To test the provider locally:
 
-1. Build the provider binary with `make build`
+1. Build the provider binary with `make build`. This will build and put the provider binary in the `./bin` directory
 2. Create a new file `~/.terraform.rc` and point the provider to the absolute **directory** path of the binary file:
     ```hcl
     provider_installation {
