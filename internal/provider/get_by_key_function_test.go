@@ -69,7 +69,7 @@ func TestGetByKeyFunction_UnknownFileName(t *testing.T) {
 			  		value = provider::dotenv::get_by_key("EXAMPLE_STRING", "./testdata/unknown.env")
 				}
 				`,
-				ExpectError: regexp.MustCompile(fmt.Sprint(ErrNotFound)),
+				ExpectError: regexp.MustCompile(fmt.Sprint(ErrFileNotFound)),
 			},
 		},
 	})

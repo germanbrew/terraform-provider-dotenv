@@ -2,4 +2,4 @@ package provider
 
 import "errors"
 
-var ErrNotFound = errors.New("no such file or directory")
+var ErrFileNotFound = errors.New("no such file or directory")

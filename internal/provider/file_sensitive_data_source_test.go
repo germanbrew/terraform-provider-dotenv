@@ -38,7 +38,7 @@ func TestAccDataSource_SensitiveDotEnvFile_UnknownFile(t *testing.T) {
 			// Read testing
 			{
 				Config:      testAccUnknownSensitiveDataSourceConfig,
-				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", "testdata/unknown.env", ErrNotFound)),
+				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", "testdata/unknown.env", ErrFileNotFound)),
 			},
 		},
 	})
