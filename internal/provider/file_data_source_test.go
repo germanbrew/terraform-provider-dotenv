@@ -8,7 +8,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 )
 
-func TestAccDataSource_DotEnvFile(t *testing.T) {
+func TestAccDataSource_DotEnvFile_KnownKey(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -30,21 +30,7 @@ func TestAccDataSource_DotEnvFile(t *testing.T) {
 	})
 }
 
-func TestAccDataSource_UnknownDotEnvFile(t *testing.T) {
-	resource.Test(t, resource.TestCase{
-		PreCheck:                 func() { testAccPreCheck(t) },
-		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
-		Steps: []resource.TestStep{
-			// Read testing
-			{
-				Config:      testAccUnknownDataSourceConfig,
-				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", "testdata/unknown.env", ErrFileNotFound)),
-			},
-		},
-	})
-}
-
-func TestAccDataSource_UnknownKey(t *testing.T) {
+func TestAccDataSource_DotEnvFile_UnknownKey(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
@@ -56,6 +42,20 @@ func TestAccDataSource_UnknownKey(t *testing.T) {
 					resource.TestCheckResourceAttr("data.dotenv.test", "entries.unknown", "invalid"),
 				),
 				ExpectError: regexp.MustCompile(`data.dotenv.test: Attribute 'entries.unknown' not found`),
+			},
+		},
+	})
+}
+
+func TestAccDataSource_DotEnvFile_UnknownFile(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing
+			{
+				Config:      testAccUnknownDataSourceConfig,
+				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", "testdata/unknown.env", ErrFileNotFound)),
 			},
 		},
 	})
