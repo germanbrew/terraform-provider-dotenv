@@ -56,7 +56,7 @@ func TestGetByKeyFunction_UnknownKey(t *testing.T) {
 	})
 }
 
-func TestGetByKeyFunction_UnknownFileName(t *testing.T) {
+func TestGetByKeyFunction_UnknownFile(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
