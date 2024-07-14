@@ -1,6 +1,8 @@
 package provider
 
 import (
+	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
@@ -28,8 +30,45 @@ func TestAccDataSource_SensitiveDotEnvFile(t *testing.T) {
 	})
 }
 
+func TestAccDataSource_SensitiveDotEnvFile_UnknownFile(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing
+			{
+				Config:      testAccUnknownSensitiveDataSourceConfig,
+				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", "testdata/unknown.env", ErrFileNotFound)),
+			},
+		},
+	})
+}
+
+func TestAccDataSource_SensitiveDotEnvFile_UnknownKey(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing
+			{
+				Config: testAccExampleSensitiveDataSourceConfig,
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("data.dotenv_sensitive.test", "entries.unknown", "invalid"),
+				),
+				ExpectError: regexp.MustCompile(`data.dotenv_sensitive.test: Attribute 'entries.unknown' not found`),
+			},
+		},
+	})
+}
+
 const testAccExampleSensitiveDataSourceConfig = `
 data "dotenv_sensitive" "test" {
   filename = "./testdata/test.env"
+}
+`
+
+const testAccUnknownSensitiveDataSourceConfig = `
+data "dotenv" "test" {
+	  filename = "./testdata/unknown.env"
 }
 `
