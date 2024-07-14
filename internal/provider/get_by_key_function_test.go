@@ -1,6 +1,7 @@
 package provider
 
 import (
+	"fmt"
 	"regexp"
 	"testing"
 
@@ -10,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/tfversion"
 )
 
-func TestGetByKeyFunction_Known(t *testing.T) {
+func TestGetByKeyFunction_KnownKey(t *testing.T) {
 	resource.UnitTest(t, resource.TestCase{
 		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
 			tfversion.SkipBelow(tfversion.Version1_8_0),
@@ -68,7 +69,7 @@ func TestGetByKeyFunction_UnknownFileName(t *testing.T) {
 			  		value = provider::dotenv::get_by_key("EXAMPLE_STRING", "./testdata/unknown.env")
 				}
 				`,
-				ExpectError: regexp.MustCompile(`no such file or directory`),
+				ExpectError: regexp.MustCompile(fmt.Sprint(NotFoundError)),
 			},
 		},
 	})
