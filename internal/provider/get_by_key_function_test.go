@@ -74,3 +74,22 @@ func TestGetByKeyFunction_UnknownFile(t *testing.T) {
 		},
 	})
 }
+
+func TestGetByKeyFunction_InvalidLine(t *testing.T) {
+	resource.UnitTest(t, resource.TestCase{
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.SkipBelow(tfversion.Version1_8_0),
+		},
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: `
+				output "test" {
+			  		value = provider::dotenv::get_by_key("INVALID", "./testdata/invalid.env")
+				}
+				`,
+				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", ErrInvalidLine, "this is invalid")),
+			},
+		},
+	})
+}
