@@ -61,6 +61,20 @@ func TestAccDataSource_SensitiveDotEnvFile_UnknownFile(t *testing.T) {
 	})
 }
 
+func TestAccDataSource_SensitiveDotEnvFile_InvalidLine(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			// Read testing
+			{
+				Config:      testAccInvalidSensitiveDataSourceConfig,
+				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", ErrInvalidLine, "this is invalid")),
+			},
+		},
+	})
+}
+
 const testAccExampleSensitiveDataSourceConfig = `
 data "dotenv_sensitive" "test" {
   filename = "./testdata/test.env"
@@ -70,5 +84,11 @@ data "dotenv_sensitive" "test" {
 const testAccUnknownSensitiveDataSourceConfig = `
 data "dotenv" "test" {
 	  filename = "./testdata/unknown.env"
+}
+`
+
+const testAccInvalidSensitiveDataSourceConfig = `
+data "dotenv_sensitive" "test" {
+	  filename = "./testdata/invalid.env"
 }
 `
