@@ -4,7 +4,7 @@ go 1.22.4
 
 require (
 	github.com/direnv/direnv/v2 v2.34.0
-	github.com/golangci/golangci-lint v1.60.0
+	github.com/golangci/golangci-lint v1.60.1
 	github.com/hashicorp/terraform-plugin-docs v0.19.4
 	github.com/hashicorp/terraform-plugin-framework v1.11.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.13.0
