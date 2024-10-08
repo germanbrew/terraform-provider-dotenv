@@ -160,8 +160,8 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/denis-tingaikin/go-header v0.5.0 h1:SRdnP5ZKvcO9KKRP1KJrhFR3RrlGuD+42t4429eC9k8=
 github.com/denis-tingaikin/go-header v0.5.0/go.mod h1:mMenU5bWrok6Wl2UsZjy+1okegmwQ3UgWl4V1D8gjlY=
-github.com/direnv/direnv/v2 v2.34.0 h1:ptc4r+qVnBwG0MPCP/G/YYEoUZ88bIrZX5izKYliAwM=
-github.com/direnv/direnv/v2 v2.34.0/go.mod h1:4kFfMgIQpxwJSoF4QENbcCZQeUO0gRegOu3aD+yyrRA=
+github.com/direnv/direnv/v2 v2.35.0 h1:DD/4z9QdNI0tG7+TbKVWRo9GWgeAvhNXV1uLjwGcyw0=
+github.com/direnv/direnv/v2 v2.35.0/go.mod h1:T9/QbaM3sQp3QQgIZ65l7gunXI9QNmIGud7WayU3Ugg=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
