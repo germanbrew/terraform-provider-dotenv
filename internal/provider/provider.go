@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
+	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/function"
 	"github.com/hashicorp/terraform-plugin-framework/provider"
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
@@ -63,6 +64,12 @@ func (p *DotenvProvider) Configure(ctx context.Context, req provider.ConfigureRe
 
 func (p *DotenvProvider) Resources(ctx context.Context) []func() resource.Resource {
 	return []func() resource.Resource{}
+}
+
+func (p *DotenvProvider) EphemeralResources(ctx context.Context) []func() ephemeral.EphemeralResource {
+	return []func() ephemeral.EphemeralResource{
+		NewFileDotEnvEphemeralResource,
+	}
 }
 
 func (p *DotenvProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
