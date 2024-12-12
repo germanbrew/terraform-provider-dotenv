@@ -76,6 +76,9 @@ func TestAccEphemeralResource_DotEnvFile_UnknownFile(t *testing.T) {
 
 func TestAccEphemeralResource_DotEnvFile_InvalidLine(t *testing.T) {
 	resource.Test(t, resource.TestCase{
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.SkipBelow(tfversion.Version1_10_0),
+		},
 		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactoriesWithEcho,
 		Steps: []resource.TestStep{
