@@ -6,7 +6,7 @@ toolchain go1.24.2
 
 require (
 	github.com/direnv/direnv/v2 v2.36.0
-	github.com/golangci/golangci-lint/v2 v2.1.3
+	github.com/golangci/golangci-lint/v2 v2.1.5
 	github.com/hashicorp/terraform-plugin-docs v0.21.0
 	github.com/hashicorp/terraform-plugin-framework v1.14.1
 	github.com/hashicorp/terraform-plugin-framework-validators v0.17.0
