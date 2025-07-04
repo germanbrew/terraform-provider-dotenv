@@ -25,7 +25,7 @@ require (
 	github.com/bflad/tfproviderlint v0.31.0 // indirect
 	github.com/bgentry/speakeasy v0.1.0 // indirect
 	github.com/bmatcuk/doublestar/v4 v4.8.1 // indirect
-	github.com/bombsimon/wsl/v5 v5.0.0 // indirect
+	github.com/bombsimon/wsl/v5 v5.1.0 // indirect
 	github.com/catenacyber/perfsprint v0.9.1 // indirect
 	github.com/cloudflare/circl v1.6.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
@@ -98,7 +98,7 @@ require (
 
 tool (
 	github.com/bflad/tfproviderlint/cmd/tfproviderlintx
-	github.com/bombsimon/wsl/v4/cmd/wsl
+	github.com/bombsimon/wsl/v5/cmd/wsl
 	github.com/catenacyber/perfsprint
 	github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
 	golang.org/x/tools/cmd/goimports
