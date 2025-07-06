@@ -47,7 +47,6 @@ func (r GetByKeyFunction) Run(ctx context.Context, req function.RunRequest, resp
 	)
 
 	resp.Error = function.ConcatFuncErrors(req.Arguments.Get(ctx, &key, &filename))
-
 	if resp.Error != nil {
 		return
 	}
