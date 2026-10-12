@@ -46,8 +46,8 @@ github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSs
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/direnv/direnv/v2 v2.38.1 h1:DE/gs14CJIW9rYDPb9OWaTBjMn7aqz43gdCmcmhP2g8=
-github.com/direnv/direnv/v2 v2.38.1/go.mod h1:3xsjzqHJscE4uwWi/0LgL4YNojYK+s/tyaSKrseTyG0=
+github.com/direnv/direnv/v2 v2.38.2 h1:aoJ2aYwkmdByAhejeq19WnEm1ii9cB7fAlCROKZIS6Q=
+github.com/direnv/direnv/v2 v2.38.2/go.mod h1:3xsjzqHJscE4uwWi/0LgL4YNojYK+s/tyaSKrseTyG0=
 github.com/emirpasic/gods v1.18.1 h1:FXtiHYKDGKCW2KzwZKx0iC0PQmdlorYgdFG9jPXJ1Bc=
 github.com/emirpasic/gods v1.18.1/go.mod h1:8tpGGwCnJ5H4r6BWwaV6OrWmMoPhUl5jm/FMNAnJvWQ=
 github.com/fatih/color v1.13.0/go.mod h1:kLAiJbzzSOZDVNGyDpeOxJ47H46qBXwg5ILebYFFOfk=
