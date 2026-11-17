@@ -5,7 +5,9 @@
   ],
   "timezone": "Europe/Berlin",
   "schedule": ["* 1-6 * * *"],
-  "dependencyDashboardLabels": ["Kind/Dependency"],
+  "dependencyDashboard": {
+    "labels": ["Kind/Dependency"]
+  },
   "labels": ["Kind/Dependency"],
   "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
   "packageRules": [
