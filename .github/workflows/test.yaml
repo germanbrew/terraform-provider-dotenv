@@ -20,6 +20,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # renovate: datasource=github-releases depName=golangci/golangci-lint
+  GOLANGCI_LINT_VERSION: v2.15.0
+
 jobs:
   # Ensure project builds before running testing matrix
   build:
@@ -38,7 +42,7 @@ jobs:
       - name: Run linters
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
-          version: latest
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
 
       - run: go tool tfproviderlintx ./...
 
