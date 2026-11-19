@@ -9,10 +9,10 @@
   "schedule": [
     "* 1-6 * * *"
   ],
-  "dependencyDashboard": true,
-  "dependencyDashboardLabels": [
-    "Kind/Dependency"
-  ],
+  "dependencyDashboard": {
+    "enabled": true,
+    "labels": ["Kind/Dependency"]
+  },
   "labels": [
     "Kind/Dependency"
   ],
