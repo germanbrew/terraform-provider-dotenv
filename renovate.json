@@ -1,29 +1,56 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices"
+    "config:best-practices",
+    "customManagers:githubActionsVersions",
+    "customManagers:makefileVersions"
   ],
   "timezone": "Europe/Berlin",
-  "schedule": ["* 1-6 * * *"],
-  "dependencyDashboard": {
-    "labels": ["Kind/Dependency"]
-  },
-  "labels": ["Kind/Dependency"],
-  "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
+  "schedule": [
+    "* 1-6 * * *"
+  ],
+  "dependencyDashboard": true,
+  "dependencyDashboardLabels": [
+    "Kind/Dependency"
+  ],
+  "labels": [
+    "Kind/Dependency"
+  ],
+  "postUpdateOptions": [
+    "gomodTidy",
+    "gomodUpdateImportPaths"
+  ],
   "packageRules": [
     {
-        "matchUpdateTypes": ["major"],
-        "minimumReleaseAge": "2 days"
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "minimumReleaseAge": "2 days"
     },
     {
-        "matchUpdateTypes": ["minor"],
-        "minimumReleaseAge": "1 days",
-        "automerge": true
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "minimumReleaseAge": "1 days",
+      "automerge": true
     },
     {
-        "matchUpdateTypes": ["patch", "pin"],
-        "minimumReleaseAge": "1 days",
-        "automerge": true
+      "matchUpdateTypes": [
+        "patch",
+        "pin"
+      ],
+      "minimumReleaseAge": "1 days",
+      "automerge": true
+    },
+    {
+      "description": "HashiCorp Terraform plugin libraries share protocol interfaces and must be updated together",
+      "matchManagers": [
+        "gomod"
+      ],
+      "matchPackageNames": [
+        "/^github\\.com/hashicorp/terraform-plugin-/"
+      ],
+      "groupName": "terraform-plugin libraries"
     }
   ]
 }

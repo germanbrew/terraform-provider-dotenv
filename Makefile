@@ -1,5 +1,7 @@
 GO_BIN?=$(shell pwd)/.bin
 BINARY_DIR=bin
+# renovate: datasource=github-releases depName=golangci/golangci-lint
+GOLANGCI_LINT_VERSION ?= v2.15.0
 BINARY_NAME=terraform-provider-dotenv
 
 .PHONY: build testacc test lint generate fmt
@@ -27,5 +29,5 @@ download:
 
 tools:
 	mkdir -p ${GO_BIN}
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b ${GO_BIN} latest
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/$(GOLANGCI_LINT_VERSION)/install.sh | sh -s -- -b ${GO_BIN} $(GOLANGCI_LINT_VERSION)
 	GOBIN=${GO_BIN} go install tool

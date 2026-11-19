@@ -9,7 +9,7 @@ A utility Terraform provider for .env files
 
 ## Requirements
 
-- [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0
+- [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0 (provider functions require >= 1.8, ephemeral resources require >= 1.10)
 
 ## Installing and Using this Plugin
 
@@ -39,7 +39,7 @@ The provider documentation can be found in the [Terraform registry](https://regi
 
 ### Requirements
 
-- [Go](https://golang.org/) > 1.22 (to build the provider plugin)
+- [Go](https://go.dev/) >= 1.26 (to build the provider plugin)
 - [golangci-lint](https://github.com/golangci/golangci-lint) (to lint code)
 - [terraform-plugin-docs](https://github.com/hashicorp/terraform-plugin-docs) (to generate registry documentation)
 

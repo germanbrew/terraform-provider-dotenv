@@ -20,6 +20,10 @@ on:
 permissions:
   contents: read
 
+env:
+  # renovate: datasource=github-releases depName=golangci/golangci-lint
+  GOLANGCI_LINT_VERSION: v2.15.0
+
 jobs:
   # Ensure project builds before running testing matrix
   build:
@@ -38,9 +42,9 @@ jobs:
       - name: Run linters
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
         with:
-          version: latest
+          version: ${{ env.GOLANGCI_LINT_VERSION }}
 
-      - run: go run github.com/bflad/tfproviderlint/cmd/tfproviderlintx@latest ./...
+      - run: go tool tfproviderlintx ./...
 
   generate:
     runs-on: ubuntu-latest
@@ -68,15 +72,22 @@ jobs:
   test:
     name: Terraform Provider Acceptance Tests
     needs: build
-    concurrency: acctests
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         # list whatever Terraform versions here you would like to support
+        # 1.10 is the minimum version supporting ephemeral resources
         terraform:
           - '1.10.*'
+          - '1.11.*'
+          - '1.12.*'
+          - '1.13.*'
+          - '1.14.*'
+          - '1.15.*'
+          - '1.16.*'
+          - '1.17.*'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
