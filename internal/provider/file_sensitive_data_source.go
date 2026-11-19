@@ -6,7 +6,6 @@ import (
 
 	"github.com/germanbrew/terraform-provider-dotenv/internal/utils"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
-	"github.com/hashicorp/terraform-plugin-framework/attr"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
@@ -94,21 +93,18 @@ func (d *sensitiveFileDotEnvDataSource) Read(ctx context.Context, req datasource
 		return
 	}
 
-	entries := make(map[string]attr.Value, len(parsedEntries))
-	for key, value := range parsedEntries {
-		entries[key] = types.StringValue(value)
-
-		if err != nil {
-			resp.Diagnostics.AddError("Conversion Error", fmt.Sprintf("Failed to convert key %s value %s: %s", key, value, err))
-
-			return
-		}
-	}
-
 	tflog.Debug(ctx, "Parsing the file was successful")
 
 	data.Filename = types.StringValue(filename)
-	data.Entries, _ = types.MapValue(types.StringType, entries)
+
+	entries, diags := types.MapValueFrom(ctx, types.StringType, parsedEntries)
+	resp.Diagnostics.Append(diags...)
+
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	data.Entries = entries
 
 	// Save data into Terraform state
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
