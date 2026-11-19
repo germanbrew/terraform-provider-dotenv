@@ -50,7 +50,7 @@ func TestGetByKeyFunction_UnknownKey(t *testing.T) {
 			  		value = provider::dotenv::get_by_key("DOES_NOT_EXIST", "./testdata/test.env")
 				}
 				`,
-				ExpectError: regexp.MustCompile(`Could not find key`),
+				ExpectError: expectErrorText("Could not find key"),
 			},
 		},
 	})
@@ -88,7 +88,7 @@ func TestGetByKeyFunction_InvalidLine(t *testing.T) {
 			  		value = provider::dotenv::get_by_key("INVALID", "./testdata/invalid.env")
 				}
 				`,
-				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", ErrInvalidLine, "this is invalid")),
+				ExpectError: expectErrorText(ErrInvalidLine.Error() + ": this is invalid"),
 			},
 		},
 	})

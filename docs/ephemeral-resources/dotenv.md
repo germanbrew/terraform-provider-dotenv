@@ -3,19 +3,19 @@
 page_title: "dotenv Ephemeral Resource - dotenv"
 subcategory: ""
 description: |-
-  Reads and provides all entries of a dotenv file.
+  Reads and provides all entries of one or more dotenv files.
   All supported formats can be found here https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats.
-  -> If you only need a specific value you can use the get_by_key https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key provider function.
+  -> If you only need a specific value you can use the get https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get provider function.
   Ephemeral resources are not stored in the state.
 ---
 
 # dotenv (Ephemeral Resource)
 
-Reads and provides all entries of a dotenv file.
+Reads and provides all entries of one or more dotenv files.
 
 All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).
 
--> If you only need a specific value you can use the [`get_by_key`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key) provider function.
+-> If you only need a specific value you can use the [`get`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get) provider function.
 
 Ephemeral resources are not stored in the state.
 
@@ -23,7 +23,8 @@ Ephemeral resources are not stored in the state.
 
 ```terraform
 ephemeral "dotenv" "database" {
-  filename = "./database.env"
+  filename   = "${path.module}/database.env"
+  expand_env = false
 }
 
 provider "postgresql" {
@@ -39,8 +40,13 @@ provider "postgresql" {
 
 ### Optional
 
-- `filename` (String) `Default: .env` Path to the dotenv file
+- `allow_missing` (Boolean) `Default: false` If `true`, files that do not exist are skipped instead of causing an error. If no file exists, `entries` is an empty map.
+- `expand_env` (Boolean) `Default: true` Whether variable references (`$VAR`, `${VAR}`) that are not defined in the dotenv file(s) are resolved from the environment of the Terraform process. If `false`, they resolve to an empty string or their default (`${VAR:-default}`). Set this to `false` to get the same result on every machine and to prevent environment variables of the host (e.g. CI secrets) from ending up in the values.
+- `filename` (String) `Default: .env` Path to the dotenv file. Relative paths are resolved against the directory Terraform is run in, not the module directory. Use `${path.module}` to reference files next to the module, e.g. `"${path.module}/.env"`. Conflicts with `filenames`.
+- `filenames` (List of String) List of dotenv files that are read in order and merged. Entries of later files override entries of earlier files and can reference them in variable expansions. Conflicts with `filename`.
+- `prefix` (String) Only include entries whose key starts with this prefix.
+- `trim_prefix` (Boolean) `Default: false` Remove `prefix` from the keys of the returned entries. Requires `prefix`.
 
 ### Read-Only
 
-- `entries` (Map of String) Key-Value entries of the dotenv file.
+- `entries` (Map of String, Sensitive) Key-Value entries of the dotenv file(s). The values are considered sensitive.

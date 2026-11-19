@@ -48,7 +48,17 @@ func (p *DotenvProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 			"```yml  \n" +
 			"FOO: bar\n" +
 			"BAR: baz\n" +
-			"```",
+			"```\n" +
+			"Values can span multiple lines if they are quoted.\n\n" +
+			"## Variable expansion\n" +
+			"Unquoted and double-quoted values can reference other variables with `$VAR`, `${VAR}` " +
+			"or `${VAR:-default}`. Single-quoted values and `\\$` are taken literally.  \n" +
+			"References are resolved from entries defined earlier in the file(s) first, then from the environment " +
+			"of the Terraform process. The data sources and the ephemeral resource can disable the latter with " +
+			"`expand_env = false`, which is recommended to get the same result on every machine and to keep " +
+			"environment variables of the host (e.g. CI secrets) out of the values.\n\n" +
+			"## Relative paths\n" +
+			descRelativePaths,
 	}
 }
 
@@ -81,7 +91,12 @@ func (p *DotenvProvider) DataSources(ctx context.Context) []func() datasource.Da
 
 func (p *DotenvProvider) Functions(ctx context.Context) []func() function.Function {
 	return []func() function.Function{
+		NewGetFunction,
 		NewGetByKeyFunction,
+		NewHasFunction,
+		NewGetOrDefaultFunction,
+		NewDecodeFunction,
+		NewEncodeFunction,
 	}
 }
 

@@ -85,7 +85,7 @@ func TestAccEphemeralResource_DotEnvFile_InvalidLine(t *testing.T) {
 			// Read testing
 			{
 				Config:      testAccInvalidEphemeralResourceConfig,
-				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", ErrInvalidLine, "this is invalid")),
+				ExpectError: expectErrorText(ErrInvalidLine.Error() + ": this is invalid"),
 			},
 		},
 	})
@@ -125,6 +125,46 @@ ephemeral "dotenv" "test" {
 
 provider "echo" {
 	data = ephemeral.dotenv.test.entries
+}
+
+resource "echo" "env" {}
+`
+
+func TestAccEphemeralResource_DotEnvFile_Options(t *testing.T) {
+	t.Setenv("DOTENV_TEST_HOST_VAR", "from-host")
+
+	resource.UnitTest(t, resource.TestCase{
+		TerraformVersionChecks: []tfversion.TerraformVersionCheck{
+			tfversion.SkipBelow(tfversion.Version1_10_0),
+		},
+		PreCheck:                 func() { testAccPreCheck(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactoriesWithEcho,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccOptionsEphemeralResourceConfig,
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue("echo.env", tfjsonpath.New("data"), knownvalue.MapExact(map[string]knownvalue.Check{
+						"FILE": knownvalue.StringExact("local-value"),
+						"HOST": knownvalue.StringExact(""),
+					})),
+				},
+			},
+		},
+	})
+}
+
+// lintignore:AT004
+const testAccOptionsEphemeralResourceConfig = `
+ephemeral "dotenv" "test" {
+  filenames     = ["./testdata/expand.env", "./testdata/missing.env"]
+  allow_missing = true
+  expand_env    = false
+  prefix        = "FROM_"
+  trim_prefix   = true
+}
+
+provider "echo" {
+  data = ephemeral.dotenv.test.entries
 }
 
 resource "echo" "env" {}

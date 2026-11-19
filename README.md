@@ -7,6 +7,14 @@
 
 A utility Terraform provider for .env files
 
+## Features
+
+- **Data sources** [`dotenv`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/dotenv) and [`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/sensitive) read all entries of one or more `.env` files, with optional prefix filtering and control over variable expansion
+- **Ephemeral resource** [`dotenv`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/ephemeral-resources/dotenv) reads secrets without storing them in the state
+- **Functions**
+  - [`get`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get), [`get_or_default`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_or_default) and [`has`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/has) read single keys
+  - [`decode`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/decode) parses dotenv content from any string, [`encode`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/encode) renders a map as a `.env` file
+
 ## Requirements
 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0 (provider functions require >= 1.8, ephemeral resources require >= 1.10)

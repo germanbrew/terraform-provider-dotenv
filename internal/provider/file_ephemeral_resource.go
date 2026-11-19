@@ -2,107 +2,104 @@ package provider
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/germanbrew/terraform-provider-dotenv/internal/utils"
+	"github.com/hashicorp/terraform-plugin-framework-validators/boolvalidator"
+	"github.com/hashicorp/terraform-plugin-framework-validators/listvalidator"
 	"github.com/hashicorp/terraform-plugin-framework-validators/stringvalidator"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral"
 	"github.com/hashicorp/terraform-plugin-framework/ephemeral/schema"
+	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/hashicorp/terraform-plugin-log/tflog"
 )
 
 // Ensure provider defined types fully satisfy framework interfaces.
 var _ ephemeral.EphemeralResource = &fileDotEnvEphemeralResource{}
 
+// NewFileDotEnvEphemeralResource returns the `dotenv` ephemeral resource.
 func NewFileDotEnvEphemeralResource() ephemeral.EphemeralResource {
 	return &fileDotEnvEphemeralResource{}
 }
 
-// fileDotEnvEphemeralResource defines the data source implementation.
+// fileDotEnvEphemeralResource defines the ephemeral resource implementation.
 type fileDotEnvEphemeralResource struct{}
 
-// fileDotEnvEphemeralResourceModel describes the data source data model.
-type fileDotEnvEphemeralResourceModel struct {
-	Filename types.String `tfsdk:"filename"`
-	Entries  types.Map    `tfsdk:"entries"`
-}
-
 func (d *fileDotEnvEphemeralResource) Metadata(ctx context.Context, req ephemeral.MetadataRequest, resp *ephemeral.MetadataResponse) {
-	resp.TypeName = req.ProviderTypeName // + "_file"
+	resp.TypeName = req.ProviderTypeName
 }
 
 func (d *fileDotEnvEphemeralResource) Schema(ctx context.Context, req ephemeral.SchemaRequest, resp *ephemeral.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		// This description is used by the documentation generator and the language server.
-		MarkdownDescription: "Reads and provides all entries of a dotenv file.\n\n" +
-			"All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).\n\n" +
+		MarkdownDescription: "Reads and provides all entries of one or more dotenv files.\n\n" + descSupportedFormats + "\n\n" +
 			"-> If you only need a specific value you can use the " +
-			"[`get_by_key`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key) provider function.\n\n" +
+			"[`get`](" + docsBaseURL + "/functions/get) provider function.\n\n" +
 			"Ephemeral resources are not stored in the state. ",
 
 		Attributes: map[string]schema.Attribute{
 			"filename": schema.StringAttribute{
-				MarkdownDescription: "`Default: .env` Path to the dotenv file",
+				MarkdownDescription: descFilename,
+				Optional:            true,
+				Validators: []validator.String{
+					stringvalidator.LengthAtLeast(1),
+					stringvalidator.ConflictsWith(path.MatchRoot("filenames")),
+				},
+			},
+			"filenames": schema.ListAttribute{
+				MarkdownDescription: descFilenames,
+				Optional:            true,
+				ElementType:         types.StringType,
+				Validators: []validator.List{
+					listvalidator.SizeAtLeast(1),
+					listvalidator.ValueStringsAre(stringvalidator.LengthAtLeast(1)),
+				},
+			},
+			"allow_missing": schema.BoolAttribute{
+				MarkdownDescription: descAllowMissing,
+				Optional:            true,
+			},
+			"expand_env": schema.BoolAttribute{
+				MarkdownDescription: descExpandEnv,
+				Optional:            true,
+			},
+			"prefix": schema.StringAttribute{
+				MarkdownDescription: descPrefix,
 				Optional:            true,
 				Validators: []validator.String{
 					stringvalidator.LengthAtLeast(1),
 				},
 			},
+			"trim_prefix": schema.BoolAttribute{
+				MarkdownDescription: descTrimPrefix,
+				Optional:            true,
+				Validators: []validator.Bool{
+					boolvalidator.AlsoRequires(path.MatchRoot("prefix")),
+				},
+			},
 			"entries": schema.MapAttribute{
-				MarkdownDescription: "Key-Value entries of the dotenv file.",
+				MarkdownDescription: "Key-Value entries of the dotenv file(s). The values are considered sensitive.",
 				Computed:            true,
+				Sensitive:           true,
 				ElementType:         types.StringType,
 			},
 		},
 	}
 }
 
-func (d *fileDotEnvEphemeralResource) Configure(ctx context.Context, req ephemeral.ConfigureRequest, resp *ephemeral.ConfigureResponse) {
-	// Prevent panic if the provider has not been configured.
-	if req.ProviderData == nil {
-		return
-	}
-}
-
 func (d *fileDotEnvEphemeralResource) Open(ctx context.Context, req ephemeral.OpenRequest, resp *ephemeral.OpenResponse) {
-	var data fileDotEnvEphemeralResourceModel
+	var data dotenvFileModel
 
-	// Read Terraform configuration data into the model
 	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	filename := data.Filename.ValueString()
-
-	if filename == "" {
-		filename = ".env"
-		tflog.Info(ctx, "No file name specified, so the default is used: "+filename)
-	}
-
-	parsedEntries, err := utils.ParseDotEnvFile(filename)
-	if err != nil {
-		resp.Diagnostics.AddError("Parse Error", fmt.Sprintf("Parsing contents of file %s failed: %s", filename, err))
-
-		return
-	}
-
-	tflog.Debug(ctx, "Parsing the file was successful")
-
-	data.Filename = types.StringValue(filename)
-
-	entries, diags := types.MapValueFrom(ctx, types.StringType, parsedEntries)
-	resp.Diagnostics.Append(diags...)
+	resp.Diagnostics.Append(data.load(ctx)...)
 
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	data.Entries = entries
-
-	// Save data into ephemeral result data
 	resp.Diagnostics.Append(resp.Result.Set(ctx, &data)...)
 }

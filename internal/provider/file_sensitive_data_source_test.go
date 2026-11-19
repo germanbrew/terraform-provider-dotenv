@@ -69,7 +69,7 @@ func TestAccDataSource_SensitiveDotEnvFile_InvalidLine(t *testing.T) {
 			// Read testing
 			{
 				Config:      testAccInvalidSensitiveDataSourceConfig,
-				ExpectError: regexp.MustCompile(fmt.Sprintf("%s: %s", ErrInvalidLine, "this is invalid")),
+				ExpectError: expectErrorText(ErrInvalidLine.Error() + ": this is invalid"),
 			},
 		},
 	})

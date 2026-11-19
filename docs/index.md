@@ -15,6 +15,12 @@ description: |-
   
   FOO: bar
   BAR: baz
+  
+  Values can span multiple lines if they are quoted.
+  Variable expansion
+  Unquoted and double-quoted values can reference other variables with $VAR, ${VAR} or ${VAR:-default}. Single-quoted values and \$ are taken literally.References are resolved from entries defined earlier in the file(s) first, then from the environment of the Terraform process. The data sources and the ephemeral resource can disable the latter with expand_env = false, which is recommended to get the same result on every machine and to keep environment variables of the host (e.g. CI secrets) out of the values.
+  Relative paths
+  Relative paths are resolved against the directory Terraform is run in, not the module directory. Use ${path.module} to reference files next to the module, e.g. "${path.module}/.env".
 ---
 
 # dotenv Provider
@@ -33,6 +39,14 @@ You can also do a YAML(ish) style:
 FOO: bar
 BAR: baz
 ```
+Values can span multiple lines if they are quoted.
+
+## Variable expansion
+Unquoted and double-quoted values can reference other variables with `$VAR`, `${VAR}` or `${VAR:-default}`. Single-quoted values and `\$` are taken literally.  
+References are resolved from entries defined earlier in the file(s) first, then from the environment of the Terraform process. The data sources and the ephemeral resource can disable the latter with `expand_env = false`, which is recommended to get the same result on every machine and to keep environment variables of the host (e.g. CI secrets) out of the values.
+
+## Relative paths
+Relative paths are resolved against the directory Terraform is run in, not the module directory. Use `${path.module}` to reference files next to the module, e.g. `"${path.module}/.env"`.
 
 ## Example Usage
 

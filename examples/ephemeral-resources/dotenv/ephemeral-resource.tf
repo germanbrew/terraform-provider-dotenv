@@ -1,5 +1,6 @@
 ephemeral "dotenv" "database" {
-  filename = "./database.env"
+  filename   = "${path.module}/database.env"
+  expand_env = false
 }
 
 provider "postgresql" {
