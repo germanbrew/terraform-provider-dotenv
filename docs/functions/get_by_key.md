@@ -3,10 +3,12 @@
 page_title: "get_by_key function - dotenv"
 subcategory: ""
 description: |-
-  Get by key function
+  Get by key function (deprecated, use get)
 ---
 
 # function: get_by_key
+
+~> **Deprecated:** Use [`get`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get) instead. `get_by_key(key, filename)` is equivalent to `get(key, filename)` and will be removed in the next major version.
 
 Reads and provides a single entry of a .env file by its key
 
@@ -15,12 +17,9 @@ All supported formats can be found [here](https://registry.terraform.io/provider
 ## Example Usage
 
 ```terraform
-resource "some_ressource" "example" {
+# Deprecated: use provider::dotenv::get("SECRET_KEY", ".env") instead
+resource "some_resource" "example" {
   value = provider::dotenv::get_by_key("SECRET_KEY", ".env")
-}
-
-output "addition" {
-  value = provider::dotenv::get_by_key("EXAMPLE_INT", "./testdata/test.env") + 50
 }
 ```
 

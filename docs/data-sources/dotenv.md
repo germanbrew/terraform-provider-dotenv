@@ -3,18 +3,18 @@
 page_title: "dotenv Data Source - dotenv"
 subcategory: ""
 description: |-
-  Reads and provides all entries of a dotenv file.
+  Reads and provides all entries of one or more dotenv files.
   All supported formats can be found here https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats.
-  -> If you only need a specific value and/or do not want to store the contents of the file in the state, you can use the get_by_key https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key provider function.
+  -> If you only need a specific value and/or do not want to store the contents of the file in the state, you can use the get https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get provider function or the dotenv https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/ephemeral-resources/dotenv ephemeral resource.
 ---
 
 # dotenv (Data Source)
 
-Reads and provides all entries of a dotenv file.
+Reads and provides all entries of one or more dotenv files.
 
 All supported formats can be found [here](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs#supported-formats).
 
--> If you only need a specific value and/or do not want to store the contents of the file in the state, you can use the [`get_by_key`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get_by_key) provider function.
+-> If you only need a specific value and/or do not want to store the contents of the file in the state, you can use the [`get`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/functions/get) provider function or the [`dotenv`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/ephemeral-resources/dotenv) ephemeral resource.
 
 ## Example Usage
 
@@ -26,13 +26,31 @@ output "local" {
   value = data.dotenv.local.entries.EXAMPLE_KEY
 }
 
-# With specific .env file path
+# With specific .env file path, relative to the module directory
 data "dotenv" "database" {
-  filename = "./database.env"
+  filename = "${path.module}/database.env"
 }
 
 output "foo" {
   value = data.dotenv.database.entries.PASSWORD
+}
+
+# Merge multiple files, later files override earlier ones.
+# Files that do not exist are skipped.
+data "dotenv" "merged" {
+  filenames     = [".env", ".env.local"]
+  allow_missing = true
+}
+
+# Only use entries starting with APP_ and remove the prefix from the keys,
+# e.g. APP_NAME becomes NAME.
+# Variable references are only resolved from the file itself, not from the
+# environment Terraform runs in.
+data "dotenv" "app" {
+  filename    = ".env"
+  prefix      = "APP_"
+  trim_prefix = true
+  expand_env  = false
 }
 ```
 
@@ -41,8 +59,13 @@ output "foo" {
 
 ### Optional
 
-- `filename` (String) `Default: .env` Path to the dotenv file
+- `allow_missing` (Boolean) `Default: false` If `true`, files that do not exist are skipped instead of causing an error. If no file exists, `entries` is an empty map.
+- `expand_env` (Boolean) `Default: true` Whether variable references (`$VAR`, `${VAR}`) that are not defined in the dotenv file(s) are resolved from the environment of the Terraform process. If `false`, they resolve to an empty string or their default (`${VAR:-default}`). Set this to `false` to get the same result on every machine and to prevent environment variables of the host (e.g. CI secrets) from ending up in the values.
+- `filename` (String) `Default: .env` Path to the dotenv file. Relative paths are resolved against the directory Terraform is run in, not the module directory. Use `${path.module}` to reference files next to the module, e.g. `"${path.module}/.env"`. Conflicts with `filenames`.
+- `filenames` (List of String) List of dotenv files that are read in order and merged. Entries of later files override entries of earlier files and can reference them in variable expansions. Conflicts with `filename`.
+- `prefix` (String) Only include entries whose key starts with this prefix.
+- `trim_prefix` (Boolean) `Default: false` Remove `prefix` from the keys of the returned entries. Requires `prefix`.
 
 ### Read-Only
 
-- `entries` (Map of String) Key-Value entries of the dotenv file. The values are by default considered nonsensitive. If you want to treat the values as sensitive, you can use the [`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/sensitive) data source or [`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.
+- `entries` (Map of String) Key-Value entries of the dotenv file(s). The values are by default considered nonsensitive. If you want to treat the values as sensitive, you can use the [`dotenv_sensitive`](https://registry.terraform.io/providers/germanbrew/dotenv/latest/docs/data-sources/sensitive) data source or [`sensitive()`](https://developer.hashicorp.com/terraform/language/functions/sensitive) function.

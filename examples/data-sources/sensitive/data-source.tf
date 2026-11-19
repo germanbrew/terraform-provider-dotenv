@@ -2,12 +2,14 @@
 data "dotenv_sensitive" "local" {}
 
 output "local" {
-  value = data.dotenv_sensitive.local.entries.EXAMPLE_KEY
+  value     = data.dotenv_sensitive.local.entries.EXAMPLE_KEY
+  sensitive = true
 }
 
-# With specific .env file path
+# With specific .env file path, relative to the module directory
 data "dotenv_sensitive" "database" {
-  filename = "./database.env"
+  filename   = "${path.module}/database.env"
+  expand_env = false
 }
 
 output "foo" {

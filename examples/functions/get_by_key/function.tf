@@ -1,7 +1,4 @@
-resource "some_ressource" "example" {
+# Deprecated: use provider::dotenv::get("SECRET_KEY", ".env") instead
+resource "some_resource" "example" {
   value = provider::dotenv::get_by_key("SECRET_KEY", ".env")
-}
-
-output "addition" {
-  value = provider::dotenv::get_by_key("EXAMPLE_INT", "./testdata/test.env") + 50
 }

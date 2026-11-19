@@ -1,0 +1,559 @@
+// Tests ported from github.com/direnv/direnv/v2/pkg/dotenv (MIT License, see NOTICE).
+
+package dotenv_test
+
+import (
+	"os"
+	"testing"
+
+	"github.com/germanbrew/terraform-provider-dotenv/internal/dotenv"
+)
+
+// mustParse works the same as dotenv.Parse but fails the test on error.
+func mustParse(t *testing.T, data string) map[string]string {
+	t.Helper()
+
+	env, err := dotenv.Parse(data)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return env
+}
+
+func shouldNotHaveEmptyKey(t *testing.T, env map[string]string) {
+	if _, ok := env[""]; ok {
+		t.Error("should not have empty key")
+	}
+}
+
+func envShouldContain(t *testing.T, env map[string]string, key string, value string) {
+	if env[key] != value {
+		t.Errorf("%s: %s, expected %s", key, env[key], value)
+	}
+}
+
+// See the reference implementation:
+//   https://github.com/bkeepers/dotenv/blob/master/lib/dotenv/environment.rb
+// TODO: support shell variable expansions
+
+const TestExportedEnv = `export OPTION_A=2
+export OPTION_B='\n' # foo
+#export OPTION_C=3
+export OPTION_D=
+export OPTION_E="foo"
+`
+
+func TestDotEnvExported(t *testing.T) {
+	env := mustParse(t, TestExportedEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if env["OPTION_A"] != "2" {
+		t.Error("OPTION_A")
+	}
+
+	if env["OPTION_B"] != "\\n" {
+		t.Error("OPTION_B")
+	}
+
+	if env["OPTION_C"] != "" {
+		t.Error("OPTION_C", env["OPTION_C"])
+	}
+
+	if v, ok := env["OPTION_D"]; v != "" || !ok {
+		t.Error("OPTION_D")
+	}
+
+	if env["OPTION_E"] != "foo" {
+		t.Error("OPTION_E")
+	}
+}
+
+const TestPlainEnv = `OPTION_A=1
+OPTION_B=2
+OPTION_C= 3
+OPTION_D =4
+OPTION_E = 5
+OPTION_F=
+OPTION_G =
+SMTP_ADDRESS=smtp    # This is a comment
+`
+
+func TestDotEnvPlain(t *testing.T) {
+	env := mustParse(t, TestPlainEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if env["OPTION_A"] != "1" {
+		t.Error("OPTION_A")
+	}
+
+	if env["OPTION_B"] != "2" {
+		t.Error("OPTION_B")
+	}
+
+	if env["OPTION_C"] != "3" {
+		t.Error("OPTION_C")
+	}
+
+	if env["OPTION_D"] != "4" {
+		t.Error("OPTION_D")
+	}
+
+	if env["OPTION_E"] != "5" {
+		t.Error("OPTION_E")
+	}
+
+	if v, ok := env["OPTION_F"]; v != "" || !ok {
+		t.Error("OPTION_F")
+	}
+
+	if v, ok := env["OPTION_G"]; v != "" || !ok {
+		t.Error("OPTION_G")
+	}
+
+	if env["SMTP_ADDRESS"] != "smtp" {
+		t.Error("SMTP_ADDRESS")
+	}
+}
+
+const TestSoloEmptyEnv = "SOME_VAR="
+
+func TestSoloEmpty(t *testing.T) {
+	env := mustParse(t, TestSoloEmptyEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	v, ok := env["SOME_VAR"]
+	if !ok {
+		t.Error("SOME_VAR missing")
+	}
+
+	if v != "" {
+		t.Error("SOME_VAR should be empty")
+	}
+}
+
+const TestQuotedEnv = `OPTION_A='1'
+OPTION_B='2'
+OPTION_C=''
+OPTION_D='\n'
+OPTION_E="1"
+OPTION_F="2"
+OPTION_G=""
+OPTION_H="\n"
+#OPTION_I="3"
+`
+
+func TestDotEnvQuoted(t *testing.T) {
+	env := mustParse(t, TestQuotedEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if env["OPTION_A"] != "1" {
+		t.Error("OPTION_A")
+	}
+
+	if env["OPTION_B"] != "2" {
+		t.Error("OPTION_B")
+	}
+
+	if env["OPTION_C"] != "" {
+		t.Error("OPTION_C")
+	}
+
+	if env["OPTION_D"] != "\\n" {
+		t.Error("OPTION_D")
+	}
+
+	if env["OPTION_E"] != "1" {
+		t.Error("OPTION_E")
+	}
+
+	if env["OPTION_F"] != "2" {
+		t.Error("OPTION_F")
+	}
+
+	if env["OPTION_G"] != "" {
+		t.Error("OPTION_G")
+	}
+
+	if env["OPTION_H"] != "\n" {
+		t.Error("OPTION_H")
+	}
+
+	if env["OPTION_I"] != "" {
+		t.Error("OPTION_I")
+	}
+}
+
+const TestYAMLEnv = `OPTION_A: 1
+OPTION_B: '2'
+OPTION_C: ''
+OPTION_D: '\n'
+#OPTION_E: '333'
+OPTION_F: 
+`
+
+func TestDotEnvYAML(t *testing.T) {
+	env := mustParse(t, TestYAMLEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if env["OPTION_A"] != "1" {
+		t.Error("OPTION_A")
+	}
+
+	if env["OPTION_B"] != "2" {
+		t.Error("OPTION_B")
+	}
+
+	if env["OPTION_C"] != "" {
+		t.Error("OPTION_C")
+	}
+
+	if env["OPTION_D"] != "\\n" {
+		t.Error("OPTION_D")
+	}
+
+	if env["OPTION_E"] != "" {
+		t.Error("OPTION_E")
+	}
+
+	if v, ok := env["OPTION_F"]; v != "" || !ok {
+		t.Error("OPTION_F")
+	}
+}
+
+func TestFailingParse(t *testing.T) {
+	if _, err := dotenv.Parse("..."); err == nil {
+		t.Error("should fail")
+	}
+}
+
+const TestCommentOverrideEnv = `
+VARIABLE=value
+#VARIABLE=disabled_value
+`
+
+func TestCommentOverride(t *testing.T) {
+	env := mustParse(t, TestCommentOverrideEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if env["VARIABLE"] != "value" {
+		t.Error("VARIABLE should == value, not", env["VARIABLE"])
+	}
+}
+
+const TestVariableExpansionEnv = `
+OPTION_A=$FOO
+OPTION_B="$FOO"
+OPTION_C=${FOO}
+OPTION_D="${FOO}"
+OPTION_E='$FOO'
+OPTION_F=$FOO/bar
+OPTION_G="$FOO/bar"
+OPTION_H=${FOO}/bar
+OPTION_I="${FOO}/bar"
+OPTION_J='$FOO/bar'
+OPTION_K=$BAR
+OPTION_L="$BAR"
+OPTION_M=${BAR}
+OPTION_N="${BAR}"
+OPTION_O='$BAR'
+OPTION_P=$BAR/baz
+OPTION_Q="$BAR/baz"
+OPTION_R=${BAR}/baz
+OPTION_S="${BAR}/baz"
+OPTION_T='$BAR/baz'
+OPTION_U="$OPTION_A/bar"
+OPTION_V=$OPTION_A/bar
+OPTION_W="$OPTION_A/bar"
+OPTION_X=${OPTION_A}/bar
+OPTION_Y="${OPTION_A}/bar"
+OPTION_Z='$OPTION_A/bar'
+OPTION_A1="$OPTION_A/bar/${OPTION_H}/$FOO"
+`
+
+func TestVariableExpansion(t *testing.T) {
+	err := os.Setenv("FOO", "foo")
+	if err != nil {
+		t.Fatalf("unable to set environment variable for testing: %s", err)
+	}
+
+	env := mustParse(t, TestVariableExpansionEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "OPTION_A", "foo")
+	envShouldContain(t, env, "OPTION_B", "foo")
+	envShouldContain(t, env, "OPTION_C", "foo")
+	envShouldContain(t, env, "OPTION_D", "foo")
+	envShouldContain(t, env, "OPTION_E", "$FOO")
+	envShouldContain(t, env, "OPTION_F", "foo/bar")
+	envShouldContain(t, env, "OPTION_G", "foo/bar")
+	envShouldContain(t, env, "OPTION_H", "foo/bar")
+	envShouldContain(t, env, "OPTION_I", "foo/bar")
+	envShouldContain(t, env, "OPTION_J", "$FOO/bar")
+	envShouldContain(t, env, "OPTION_K", "")
+	envShouldContain(t, env, "OPTION_L", "")
+	envShouldContain(t, env, "OPTION_M", "")
+	envShouldContain(t, env, "OPTION_N", "")
+	envShouldContain(t, env, "OPTION_O", "$BAR")
+	envShouldContain(t, env, "OPTION_P", "/baz")
+	envShouldContain(t, env, "OPTION_Q", "/baz")
+	envShouldContain(t, env, "OPTION_R", "/baz")
+	envShouldContain(t, env, "OPTION_S", "/baz")
+	envShouldContain(t, env, "OPTION_T", "$BAR/baz")
+	envShouldContain(t, env, "OPTION_U", "foo/bar")
+	envShouldContain(t, env, "OPTION_V", "foo/bar")
+	envShouldContain(t, env, "OPTION_W", "foo/bar")
+	envShouldContain(t, env, "OPTION_X", "foo/bar")
+	envShouldContain(t, env, "OPTION_Y", "foo/bar")
+	envShouldContain(t, env, "OPTION_Z", "$OPTION_A/bar")
+	envShouldContain(t, env, "OPTION_A1", "foo/bar/foo/bar/foo")
+}
+
+const TestVariableExpansionWithDefaultsEnv = `
+OPTION_A="${FOO:-}"
+OPTION_B="${FOO:-default}"
+OPTION_C='${FOO:-default}'
+OPTION_D="${FOO:-default}/bar"
+OPTION_E='${FOO:-default}/bar'
+OPTION_F="$FOO:-default"
+OPTION_G="$BAR:-default"
+OPTION_H="${BAR:-}"
+OPTION_I="${BAR:-default}"
+OPTION_J='${BAR:-default}'
+OPTION_K="${BAR:-default}/bar"
+OPTION_L='${BAR:-default}/bar'
+OPTION_M="${OPTION_A:-}"
+OPTION_N="${OPTION_A:-default}"
+OPTION_O='${OPTION_A:-default}'
+OPTION_P="${OPTION_A:-default}/bar"
+OPTION_Q='${OPTION_A:-default}/bar'
+OPTION_R="${:-}"
+OPTION_S="${BAR:-:-}"
+`
+
+const TestEscapedDollarEnv = `
+OPTION_A=\$FOO
+OPTION_B="\$FOO"
+OPTION_C='\$FOO'
+OPTION_D="\${FOO}"
+OPTION_E="cost is \$5"
+OPTION_F="a\$b$FOO"
+OPTION_G="literal \$"
+OPTION_H="$FOO"
+`
+
+// A backslash escapes a dollar sign. Expected values are those of the canonical
+// implementation, https://github.com/bkeepers/dotenv, on the same input.
+func TestEscapedDollar(t *testing.T) {
+	err := os.Setenv("FOO", "foo")
+	if err != nil {
+		t.Fatalf("unable to set environment variable for testing: %s", err)
+	}
+
+	env := mustParse(t, TestEscapedDollarEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "OPTION_A", "$FOO")
+	envShouldContain(t, env, "OPTION_B", "$FOO")
+	envShouldContain(t, env, "OPTION_C", `\$FOO`) // single quotes are literal
+	envShouldContain(t, env, "OPTION_D", "${FOO}")
+	envShouldContain(t, env, "OPTION_E", "cost is $5")
+	envShouldContain(t, env, "OPTION_F", "a$bfoo")
+	envShouldContain(t, env, "OPTION_G", "literal $")
+	envShouldContain(t, env, "OPTION_H", "foo") // control: an unescaped variable still expands
+}
+
+func TestVariableExpansionWithDefaults(t *testing.T) {
+	err := os.Setenv("FOO", "foo")
+	if err != nil {
+		t.Fatalf("unable to set environment variable for testing: %s", err)
+	}
+
+	env := mustParse(t, TestVariableExpansionWithDefaultsEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "OPTION_A", "foo")
+	envShouldContain(t, env, "OPTION_B", "foo")
+	envShouldContain(t, env, "OPTION_C", "${FOO:-default}")
+	envShouldContain(t, env, "OPTION_D", "foo/bar")
+	envShouldContain(t, env, "OPTION_E", "${FOO:-default}/bar")
+	envShouldContain(t, env, "OPTION_F", "foo:-default")
+	envShouldContain(t, env, "OPTION_G", ":-default")
+	envShouldContain(t, env, "OPTION_H", "")
+	envShouldContain(t, env, "OPTION_I", "default")
+	envShouldContain(t, env, "OPTION_J", "${BAR:-default}")
+	envShouldContain(t, env, "OPTION_K", "default/bar")
+	envShouldContain(t, env, "OPTION_L", "${BAR:-default}/bar")
+	envShouldContain(t, env, "OPTION_M", "foo")
+	envShouldContain(t, env, "OPTION_N", "foo")
+	envShouldContain(t, env, "OPTION_O", "${OPTION_A:-default}")
+	envShouldContain(t, env, "OPTION_P", "foo/bar")
+	envShouldContain(t, env, "OPTION_Q", "${OPTION_A:-default}/bar")
+	envShouldContain(t, env, "OPTION_R", "") // this is actually invalid in bash, but what to do here?
+	envShouldContain(t, env, "OPTION_S", ":-")
+}
+
+const TestMultilineEnv = `MULTILINE="line1
+line2
+line3"
+SINGLE=one`
+
+func TestDotEnvMultiline(t *testing.T) {
+	env := mustParse(t, TestMultilineEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "MULTILINE", "line1\nline2\nline3")
+	envShouldContain(t, env, "SINGLE", "one")
+}
+
+func TestDotEnvUnclosedQuote(t *testing.T) {
+	if _, err := dotenv.Parse(`FOO="line1
+line2`); err == nil {
+		t.Error("should fail with unclosed quoted value")
+	}
+}
+
+const TestMixedMultilineEnv = `A=1
+B="foo
+bar"
+C=3`
+
+func TestDotEnvMixedMultiline(t *testing.T) {
+	env := mustParse(t, TestMixedMultilineEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "A", "1")
+	envShouldContain(t, env, "B", "foo\nbar")
+	envShouldContain(t, env, "C", "3")
+}
+
+const TestNestedJSONEnv = `CONFIG='{
+  "key1": "value1",
+  "key2": "value2",
+  "nested": {
+    "nested_key_1": "nested_value_1"
+  }
+}'
+OTHER=value`
+
+func TestDotEnvNestedJSON(t *testing.T) {
+	env := mustParse(t, TestNestedJSONEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	expectedJSON := "{\n  \"key1\": \"value1\",\n  \"key2\": \"value2\",\n  \"nested\": {\n    \"nested_key_1\": \"nested_value_1\"\n  }\n}"
+	envShouldContain(t, env, "CONFIG", expectedJSON)
+	envShouldContain(t, env, "OTHER", "value")
+}
+
+// Exact file from https://github.com/direnv/direnv/issues/1519
+const TestIssue1519Env = `# This is a comment export FOO=99
+export BAR=bleh
+`
+
+func TestDotEnvIssue1519(t *testing.T) {
+	env := mustParse(t, TestIssue1519Env)
+	shouldNotHaveEmptyKey(t, env)
+
+	if _, ok := env["FOO"]; ok {
+		t.Error("FOO must not be parsed from a comment line, got", env["FOO"])
+	}
+
+	envShouldContain(t, env, "BAR", "bleh")
+}
+
+// A commented-out export whose truncated quote must not start a multi-line
+// value (issue #1519): previously this failed the whole file with
+// "unclosed quoted value in .env file".
+const TestCommentedUnbalancedQuoteEnv = `# export FOO="99
+export BAR=bleh
+REAL=value
+`
+
+func TestDotEnvCommentedUnbalancedQuote(t *testing.T) {
+	env := mustParse(t, TestCommentedUnbalancedQuoteEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if _, ok := env["FOO"]; ok {
+		t.Error("FOO must not be parsed from a comment line, got", env["FOO"])
+	}
+
+	envShouldContain(t, env, "BAR", "bleh")
+	envShouldContain(t, env, "REAL", "value")
+}
+
+const TestCommentedUnbalancedSingleQuoteEnv = `# export FOO='99
+export BAR=bleh
+`
+
+func TestDotEnvCommentedUnbalancedSingleQuote(t *testing.T) {
+	env := mustParse(t, TestCommentedUnbalancedSingleQuoteEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if _, ok := env["FOO"]; ok {
+		t.Error("FOO must not be parsed from a comment line, got", env["FOO"])
+	}
+
+	envShouldContain(t, env, "BAR", "bleh")
+}
+
+// An unbalanced quote in a trailing comment line must not fail the file.
+const TestCommentedUnbalancedQuoteEOFEnv = `export BAR=bleh
+# export FOO="99
+`
+
+func TestDotEnvCommentedUnbalancedQuoteEOF(t *testing.T) {
+	env := mustParse(t, TestCommentedUnbalancedQuoteEOFEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if _, ok := env["FOO"]; ok {
+		t.Error("FOO must not be parsed from a comment line, got", env["FOO"])
+	}
+
+	envShouldContain(t, env, "BAR", "bleh")
+}
+
+// A comment line that opens a fake multi-line value must not swallow the
+// following real variable definitions (issue #1519).
+const TestCommentedQuoteSwallowEnv = `# export FOO="99
+BAR=bleh
+REAL="value"
+`
+
+func TestDotEnvCommentedQuoteSwallow(t *testing.T) {
+	env := mustParse(t, TestCommentedQuoteSwallowEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	if _, ok := env["FOO"]; ok {
+		t.Error("FOO must not be parsed from a comment line, got", env["FOO"])
+	}
+
+	envShouldContain(t, env, "BAR", "bleh")
+	envShouldContain(t, env, "REAL", "value")
+}
+
+// Escaped quotes must not confuse the multi-line detection.
+const TestEscapedQuoteEnv = `OPTION_A="bar\"baz"
+SINGLE=one
+`
+
+func TestDotEnvEscapedQuote(t *testing.T) {
+	env := mustParse(t, TestEscapedQuoteEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "OPTION_A", "bar\"baz")
+	envShouldContain(t, env, "SINGLE", "one")
+}
+
+// An escaped quote does not close a multi-line value either.
+const TestEscapedQuoteMultilineEnv = `MULTI="a\"b
+c"
+AFTER=done
+`
+
+func TestDotEnvEscapedQuoteMultiline(t *testing.T) {
+	env := mustParse(t, TestEscapedQuoteMultilineEnv)
+	shouldNotHaveEmptyKey(t, env)
+
+	envShouldContain(t, env, "MULTI", "a\"b\nc")
+	envShouldContain(t, env, "AFTER", "done")
+}

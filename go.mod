@@ -3,7 +3,6 @@ module github.com/germanbrew/terraform-provider-dotenv
 go 1.26.1
 
 require (
-	github.com/direnv/direnv/v2 v2.38.2
 	github.com/hashicorp/terraform-plugin-framework v1.19.0
 	github.com/hashicorp/terraform-plugin-framework-validators v0.19.0
 	github.com/hashicorp/terraform-plugin-go v0.31.0

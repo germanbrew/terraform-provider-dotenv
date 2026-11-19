@@ -4,6 +4,8 @@
 package provider
 
 import (
+	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
@@ -31,4 +33,10 @@ func testAccPreCheck(t *testing.T) {
 	// You can add code here to run prior to any test case execution, for example assertions
 	// about the appropriate environment variables being set are common to see in a pre-check
 	// function.
+}
+
+// expectErrorText returns a regexp matching text in a Terraform error message.
+// Terraform wraps long messages, so any whitespace between words matches.
+func expectErrorText(text string) *regexp.Regexp {
+	return regexp.MustCompile(strings.Join(strings.Fields(regexp.QuoteMeta(text)), `\s+`))
 }
